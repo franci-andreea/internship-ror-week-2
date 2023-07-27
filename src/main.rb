@@ -10,6 +10,7 @@ require_relative('../src/service/bank_account_service.rb')
 require_relative('../src/service/atm_service.rb')
 
 require 'date'
+require 'time'
 
 $bank_database
 
@@ -72,17 +73,21 @@ def use_atm_machine(current_user)
 
                 $bank_database.bank_accounts.each do |bank_account|
                     if bank_account.user == current_user && bank_account.pin == pin
+                        
                         # convert amount into a number
                         amount = amount.to_f
+
                         # add money into that account
                         AtmService.depositMoney(amount, bank_account, $bank_database.atm_unit)
-                        new_datetime = DateTime.new.strftime("%d/%m/%Y %H:%M")
+                        new_datetime = Time.now
                         new_transaction = Transaction.new(amount, new_datetime)
                         bank_account.transactions.push(new_transaction)
+
                         puts "Transaction successful!"
                         puts "Total amount on your account: #{bank_account.amount}"
                         puts "Total amount left in the ATM: #{$bank_database.atm_unit.total_amount}"
                         puts "Returning to main menu...\n"
+
                         return
                     end
                 end
@@ -93,30 +98,43 @@ def use_atm_machine(current_user)
                 print "Please introduce the pin for the account you want to withdraw the money to: "
                 pin = gets.chomp
 
-                print "Please introduce a number for the amount of money you want to deposit: "
+                print "Please introduce a number for the amount of money you want to withdraw: "
                 amount = gets.chomp
 
                 $bank_database.bank_accounts.each do |bank_account|
-                    if bank_account.user == current_user && bank_account.pin == pin
-                        # withdraw money from that account
-                        AtmService.withdrawMoney(current_user, amount, bank_account)
 
-                        new_datetime = DateTime.new.strftime("%d/%m/%Y %H:%M")
-                        new_transaction = Transaction.new(-amount, new_datetime) # hold a negative value to differentiate from the deposit transactions
-                        bank_account.transactions.push(new_transaction)
+                    if bank_account.user == current_user && bank_account.pin == pin
                         
-                        puts "Transaction successful!"
-                        puts "Total amount on your account: #{bank_account.amount}"
-                        puts "Total amount left in the ATM: #{$bank_database.atm_unit.total_amount}"
-                        puts "Returning to main menu...\n"
+                        # convert amount into a number
+                        amount = amount.to_f
+
+                        # store the initial bank_account amount to check if the transaction was successful
+                        initial_bank_account_amount = bank_account.amount
+
+                        # withdraw money from that account
+                        AtmService.withdrawMoney(amount, bank_account, $bank_database.atm_unit)
+
+                        if bank_account.amount != initial_bank_account_amount
+                            # the transaction was possible, therefore a success, so we can add it to the list of transactions
+                            new_datetime = Time.now
+                            new_transaction = Transaction.new(-amount, new_datetime) # hold a negative value to differentiate from the deposit transactions
+                            bank_account.transactions.push(new_transaction)
+
+                            puts "Total amount on your account: #{bank_account.amount}"
+                            puts "Total amount left in the ATM: #{$bank_database.atm_unit.total_amount}"
+                            puts "Returning to main menu...\n"
+
+                            return
+                        end
+
+                        puts "No transactions were made, return to main menu..."
                         return
-                    else
-                        puts "There is no account on your name with the given PIN, returning to main menu\n"
-                        break
                     end
                 end
 
+                puts "There is no account on your name with the given PIN, returning to main menu\n"
                 break
+
             else
                 puts "You did not introduce a valid number, please choose between the given options [1 - 2]"
                 next

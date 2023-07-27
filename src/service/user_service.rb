@@ -48,13 +48,11 @@ module UserService
     end
 
     def UserService.findByEmail(users, email)
-
         users.each do |user|
             if user.email == email
                 return user
             end
         end
-
     end
 
 end 

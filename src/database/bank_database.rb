@@ -1,5 +1,4 @@
 # a class created to simulate a bank database with user accounts, bank accounts and an ATM unit
-
 class BankDatabase
 
     # constructor
