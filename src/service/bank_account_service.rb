@@ -26,6 +26,7 @@ module BankAccountService
         puts "Generating IBAN for your account..."
         # generate IBAN number
         iban = BankAccountService.generate_iban
+    
         puts "IBAN Generated: #{iban}"
     
         # set initial amount of money to 0

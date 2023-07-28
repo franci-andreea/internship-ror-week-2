@@ -2,7 +2,7 @@ require_relative('../module/validator.rb')
 
 module UserService
     
-    def UserService.create_account
+    def UserService.create_account(users)
         puts "---------- CREATE ACCOUNT ----------"
         puts "Please introduce the following details to create your account"
     
@@ -19,7 +19,7 @@ module UserService
             print "Email: "
             email = gets.chomp
     
-            if (Validator.is_unique?($bank_database.users, email))
+            if (Validator.is_unique?(users, email))
                 break
             else
                 puts "This email is already used for an existing account, please introduce other address"
@@ -39,7 +39,7 @@ module UserService
         end
     
         puts "\nCreating your account..."
-        new_user = User.new(name, job, email, address)
+        new_user = User.new(name, job, email, address, [])
     
         puts "Successfully created your account!"
         new_user.show_details
@@ -47,11 +47,20 @@ module UserService
         return new_user
     end
 
-    def UserService.findByEmail(users, email)
+    def UserService.find_by_email(users, email)
         users.each do |user|
             if user.email == email
                 return user
             end
+        end
+    end
+
+    def UserService.view_account_details(current_user)
+        puts "---------- VIEW ACCOUNT DETAILS ----------"
+        puts "For user #{current_user.name}"
+    
+        current_user.bank_accounts.each do |bank_account|
+                bank_account.show_details
         end
     end
 
