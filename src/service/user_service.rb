@@ -53,6 +53,8 @@ module UserService
                 return user
             end
         end
+
+        return nil
     end
 
     def UserService.view_account_details(current_user)
