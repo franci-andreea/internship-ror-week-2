@@ -1,6 +1,6 @@
 module BankAccountService
 
-    def BankAccountService.generate_iban
+    def self.generate_iban
         iban_list = [
             "RO12RZBR2469124176164194",
             "RO85PORL3241441653915515",
@@ -18,7 +18,7 @@ module BankAccountService
         return iban_list.at(rand(0..10))
     end
 
-    def BankAccountService.create_bank_account(current_user)
+    def self.create_bank_account(current_user)
         puts "---------- CREATE BANK ACCOUNT ----------"
         print "Please insert the PIN you want to have on this account: "
         pin = gets.chomp

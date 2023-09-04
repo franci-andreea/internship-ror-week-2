@@ -1,6 +1,6 @@
 module TransactionService
     
-    def TransactionService.sort_by_date(transactions)
+    def self.sort_by_date(transactions)
         transactions.sort! do |firstTransaction, secondTransaction|
             secondTransaction.datetime <=> firstTransaction.datetime
         end
