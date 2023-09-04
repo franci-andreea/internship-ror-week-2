@@ -16,21 +16,21 @@ describe UserService do
   }
 
   describe "find_by_email" do
+    subject(:users) { [user1, user_to_find_email, user2] }
+
     context "given account with email that exists" do
       it "should return the user" do
-        users = [user1, user_to_find_email, user2]
+        subject
         email_to_find = "franci@gmail.com"
         found_user = UserService.find_by_email(users, email_to_find)
 
         expect(found_user).to eq(user_to_find_email)
       end
     end
-  end
 
-  describe "find_by_email" do
     context "given account with email that does not exist" do
       it "should return null" do
-        users = [user1, user_to_find_email, user2]
+        subject
         email_to_find = "franci234@gmail.com"
         found_user = UserService.find_by_email(users, email_to_find)
 

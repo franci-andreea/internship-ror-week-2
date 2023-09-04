@@ -24,9 +24,7 @@ describe Validator do
         expect(Validator.is_unique?(users, email_not_unique)).to be false
       end
     end
-  end
 
-  describe "is_unique?" do
     context "given email that is unique" do
       it "should return true" do
         users = [user1, user2, user3]
@@ -36,6 +34,5 @@ describe Validator do
       end
     end
   end
-
 
 end
