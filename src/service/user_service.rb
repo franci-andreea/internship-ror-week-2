@@ -2,7 +2,7 @@ require_relative('../module/validator.rb')
 
 module UserService
     
-    def UserService.create_account(users)
+    def self.create_account(users)
         puts "---------- CREATE ACCOUNT ----------"
         puts "Please introduce the following details to create your account"
     
@@ -47,7 +47,7 @@ module UserService
         return new_user
     end
 
-    def UserService.find_by_email(users, email)
+    def self.find_by_email(users, email)
         users.each do |user|
             if user.email == email
                 return user
@@ -57,7 +57,7 @@ module UserService
         return nil
     end
 
-    def UserService.view_account_details(current_user)
+    def self.view_account_details(current_user)
         puts "---------- VIEW ACCOUNT DETAILS ----------"
         puts "For user #{current_user.name}"
     

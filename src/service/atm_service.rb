@@ -7,12 +7,12 @@ module AtmService
 
     WITHDRAW_LIMIT = 5000
 
-    def AtmService.deposit_money(amount, bank_account, atm_unit)
+    def self.deposit_money(amount, bank_account, atm_unit)
         bank_account.amount += amount
         atm_unit.total_amount += amount
     end
 
-    def AtmService.withdraw_money(amount, bank_account, atm_unit)
+    def self.withdraw_money(amount, bank_account, atm_unit)
         # sort transactions by date
         TransactionService.sort_by_date(bank_account.transactions) 
 
@@ -43,7 +43,79 @@ module AtmService
         end
     end
 
-    def AtmService.use_atm_machine(current_user, atm_unit)
+    def self.deposit_money_handle(current_user, atm_unit)
+        print "Please introduce the pin for the account you want to deposit the money to: "
+        pin = gets.chomp
+        
+        print "Please introduce a number for the amount of money you want to deposit: "
+        amount = gets.chomp
+
+        current_user.bank_accounts.each do |bank_account|
+            if bank_account.pin == pin
+                
+                # convert amount into a number
+                amount = amount.to_f
+
+                # add money into that account
+                deposit_money(amount, bank_account, atm_unit)
+                new_datetime = Time.now
+                new_transaction = Transaction.new(amount, new_datetime)
+                bank_account.transactions.push(new_transaction)
+
+                puts "Transaction successful!"
+                puts "Total amount on your account: #{bank_account.amount}"
+                puts "Total amount left in the ATM: #{atm_unit.total_amount}"
+                puts "Returning to main menu...\n"
+
+                return
+            end
+        end
+
+        puts "There is no account on your name with the given PIN, returning to main menu\n"
+
+    end
+
+    def self.withdraw_money_handle(current_user, atm_unit)
+        print "Please introduce the pin for the account you want to withdraw the money from: "
+        pin = gets.chomp
+
+        print "Please introduce a number for the amount of money you want to withdraw: "
+        amount = gets.chomp
+
+        current_user.bank_accounts.each do |bank_account|
+            if bank_account.pin == pin
+                
+                # convert amount into a number
+                amount = amount.to_f
+
+                # store the initial bank_account amount to check if the transaction was successful
+                initial_bank_account_amount = bank_account.amount
+
+                # withdraw money from that account
+                withdraw_money(amount, bank_account, atm_unit)
+
+                if bank_account.amount != initial_bank_account_amount
+                    # the transaction was possible, therefore a success, so we can add it to the list of transactions
+                    new_datetime = Time.now
+                    new_transaction = Transaction.new(-amount, new_datetime) # hold a negative value to differentiate from the deposit transactions
+                    bank_account.transactions.push(new_transaction)
+
+                    puts "Total amount on your account: #{bank_account.amount}"
+                    puts "Total amount left in the ATM: #{atm_unit.total_amount}"
+                    puts "Returning to main menu...\n"
+
+                    return
+                end
+
+                puts "No transactions were made, return to main menu...\n"
+                return
+            end
+        end
+
+        puts "There is no account on your name with the given PIN, returning to main menu\n"
+    end
+
+    def self.use_atm_machine(current_user, atm_unit)
         puts "---------- USE ATM MACHINE ----------"
     
         loop do
@@ -55,77 +127,11 @@ module AtmService
             action_choice = gets.chomp
             case action_choice
                 when "1"
-                    # introduce the pin of the account he wants to add money
-                    print "Please introduce the pin for the account you want to deposit the money to: "
-                    pin = gets.chomp
-                    
-                    print "Please introduce a number for the amount of money you want to deposit: "
-                    amount = gets.chomp
-    
-                    current_user.bank_accounts.each do |bank_account|
-                        if bank_account.pin == pin
-                            
-                            # convert amount into a number
-                            amount = amount.to_f
-    
-                            # add money into that account
-                            AtmService.deposit_money(amount, bank_account, atm_unit)
-                            new_datetime = Time.now
-                            new_transaction = Transaction.new(amount, new_datetime)
-                            bank_account.transactions.push(new_transaction)
-    
-                            puts "Transaction successful!"
-                            puts "Total amount on your account: #{bank_account.amount}"
-                            puts "Total amount left in the ATM: #{atm_unit.total_amount}"
-                            puts "Returning to main menu...\n"
-    
-                            return
-                        end
-                    end
-    
-                    puts "There is no account on your name with the given PIN, returning to main menu\n"
+                    deposit_money_handle(current_user, atm_unit)
                     break
                 when "2"
-                    print "Please introduce the pin for the account you want to withdraw the money from: "
-                    pin = gets.chomp
-    
-                    print "Please introduce a number for the amount of money you want to withdraw: "
-                    amount = gets.chomp
-    
-                    current_user.bank_accounts.each do |bank_account|
-    
-                        if bank_account.pin == pin
-                            
-                            # convert amount into a number
-                            amount = amount.to_f
-    
-                            # store the initial bank_account amount to check if the transaction was successful
-                            initial_bank_account_amount = bank_account.amount
-    
-                            # withdraw money from that account
-                            AtmService.withdraw_money(amount, bank_account, atm_unit)
-    
-                            if bank_account.amount != initial_bank_account_amount
-                                # the transaction was possible, therefore a success, so we can add it to the list of transactions
-                                new_datetime = Time.now
-                                new_transaction = Transaction.new(-amount, new_datetime) # hold a negative value to differentiate from the deposit transactions
-                                bank_account.transactions.push(new_transaction)
-    
-                                puts "Total amount on your account: #{bank_account.amount}"
-                                puts "Total amount left in the ATM: #{atm_unit.total_amount}"
-                                puts "Returning to main menu...\n"
-    
-                                return
-                            end
-    
-                            puts "No transactions were made, return to main menu...\n"
-                            return
-                        end
-                    end
-    
-                    puts "There is no account on your name with the given PIN, returning to main menu\n"
+                    withdraw_money_handle(current_user, atm_unit)
                     break
-    
                 else
                     puts "You did not introduce a valid number, please choose between the given options [1 - 2]"
                     next
