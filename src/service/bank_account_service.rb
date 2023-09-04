@@ -24,17 +24,15 @@ module BankAccountService
         pin = gets.chomp
     
         puts "Generating IBAN for your account..."
-        # generate IBAN number
         iban = BankAccountService.generate_iban
-    
+
         puts "IBAN Generated: #{iban}"
     
-        # set initial amount of money to 0
         amount = 0.00
         
         puts "Bank account created successfully, returning to the main menu\n"
 
-        return BankAccount.new(current_user, iban, pin, amount, [])
+        return BankAccount.new(iban, pin, amount, [])
     end
 
 end

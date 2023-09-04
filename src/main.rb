@@ -28,7 +28,6 @@ def show_new_menu(current_user)
             case action_choice
                 when "1"
                     new_bank_account = BankAccountService.create_bank_account(current_user)
-                    # add created account to the user's bank accounts list
                     puts "Display the new bank account: [iban: #{new_bank_account.iban}, pin: #{new_bank_account.pin}, amount: #{new_bank_account.amount}]"
 
                     current_user.bank_accounts.push(new_bank_account)
@@ -56,7 +55,6 @@ def main
     puts "\nWelcome to Awooo Bank Application!\n"
 
     puts "Initializing application..."
-    # create users, bank accounts and an ATM machine to add to the bank database
     $bank_database = Populate.populate_database
     puts "Intialization successful!"
 
@@ -76,17 +74,14 @@ def main
                     next
                 end
                 
-                # get the current user object
                 current_user = UserService.find_by_email($bank_database.users, email)
 
-                # display a new menu
                 show_new_menu(current_user)
                 break
             when "2"
                 new_user = UserService.create_account($bank_database.users)
                 $bank_database.users.push(new_user)
 
-                # created the user, redirect him to the new menu
                 show_new_menu(new_user)
                 break
             else

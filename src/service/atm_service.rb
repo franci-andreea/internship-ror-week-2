@@ -5,6 +5,8 @@ require 'date'
 
 module AtmService
 
+    WITHDRAW_LIMIT = 5000
+
     def AtmService.deposit_money(amount, bank_account, atm_unit)
         bank_account.amount += amount
         atm_unit.total_amount += amount
@@ -23,12 +25,12 @@ module AtmService
             end
         end
 
-        if total_withdraw.abs > 5000
+        if total_withdraw.abs > WITHDRAW_LIMIT
             puts "You have reached the limit of 5000$ to withdraw, return to main menu...\n"
             return
-        elsif total_withdraw.abs + amount > 5000
+        elsif total_withdraw.abs + amount > WITHDRAW_LIMIT
             puts "The sum you want to withdraw already exceeds (considering the previous transactions) the limit of 5000$/day"
-        elsif amount > 5000
+        elsif amount > WITHDRAW_LIMIT
             puts "You cannot withdraw more than 5000$ from an account/day, return to main menu...\n"
             return
         elsif amount > bank_account.amount
