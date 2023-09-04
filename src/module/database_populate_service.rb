@@ -1,8 +1,8 @@
 require_relative('../database/bank_database.rb')
 
-module Populate
+module DatabasePopulateService
 
-    def self.populate_database
+    def self.call
         users = []
         bank_accounts = []
         transactions = []

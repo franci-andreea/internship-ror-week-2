@@ -4,7 +4,7 @@ require_relative('../src/model/bank_account.rb')
 require_relative('../src/model/transaction.rb')
 require_relative('../src/model/atm_unit.rb')
 require_relative('../src/module/validator.rb')
-require_relative('../src/module/populate.rb')
+require_relative('../src/module/database_populate_service.rb')
 require_relative('../src/service/user_service.rb')
 require_relative('../src/service/bank_account_service.rb')
 require_relative('../src/service/atm_service.rb')
@@ -55,7 +55,7 @@ def main
     puts "\nWelcome to Awooo Bank Application!\n"
 
     puts "Initializing application..."
-    $bank_database = Populate.populate_database
+    $bank_database = DatabasePopulateService.call
     puts "Intialization successful!"
 
     loop do
